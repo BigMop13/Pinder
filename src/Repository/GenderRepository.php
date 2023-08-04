@@ -20,5 +20,4 @@ class GenderRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Gender::class);
     }
-    
 }
