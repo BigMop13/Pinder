@@ -15,7 +15,7 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: symfony
+      MYSQL_DATABASE: pinder
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
     volumes:
