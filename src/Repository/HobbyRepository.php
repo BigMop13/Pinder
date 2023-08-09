@@ -20,4 +20,18 @@ class HobbyRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Hobby::class);
     }
+
+    /**
+     * @param int[] $hobbyIds
+     *
+     * @return Hobby[]
+     */
+    public function getHobbiesFromArrayOfIds(array $hobbyIds): array
+    {
+        return $this->createQueryBuilder('h')
+            ->where('h.id IN (:ids)')
+            ->setParameter('ids', $hobbyIds)
+            ->getQuery()
+            ->getResult();
+    }
 }
