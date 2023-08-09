@@ -2,12 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UserDetailsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+    operations: [
+    ],
+    formats: ['json' => ['application/json']],
+    denormalizationContext: ['groups' => ['details:write']],
+)]
 #[ORM\Entity(repositoryClass: UserDetailsRepository::class)]
 class UserDetails
 {
@@ -15,10 +25,6 @@ class UserDetails
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\OneToOne(inversedBy: 'userDetails', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
@@ -29,7 +35,7 @@ class UserDetails
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $work = null;
 
-    #[ORM\OneToMany(mappedBy: 'userDetails', targetEntity: Image::class)]
+    #[ORM\OneToMany(mappedBy: 'userDetails', targetEntity: Image::class, cascade: ['persist'])]
     private Collection $images;
 
     public function __construct()
@@ -40,18 +46,6 @@ class UserDetails
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -104,6 +98,16 @@ class UserDetails
             $this->images->add($image);
             $image->setUserDetails($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return UserDetails
+     */
+    public function setImages(Collection $images): static
+    {
+        $this->images = $images;
 
         return $this;
     }

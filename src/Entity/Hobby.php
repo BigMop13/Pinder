@@ -2,20 +2,36 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\HobbyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+    ],
+    formats: ['json' => ['application/json']],
+    denormalizationContext: ['groups' => ['hobby:write']],
+)]
 #[ORM\Entity(repositoryClass: HobbyRepository::class)]
 class Hobby
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['hobby:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['hobby:write'])]
     private ?string $hobby = null;
 
     #[ORM\ManyToMany(targetEntity: UserPreference::class, mappedBy: 'hobbies')]

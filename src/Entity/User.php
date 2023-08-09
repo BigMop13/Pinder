@@ -2,10 +2,28 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use App\Controller\Security\UserRegistration;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(
+            uriTemplate: '/user/register',
+            controller: UserRegistration::class,
+            name: 'registration'
+        ),
+    ],
+    formats: ['json' => ['application/json']],
+    denormalizationContext: ['groups' => ['user:write']],
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface
 {
@@ -33,8 +51,25 @@ class User implements UserInterface
     #[ORM\Column(length: 255)]
     private ?string $address = null;
 
-    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?UserPreference $userPreferences = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
     private ?UserDetails $userDetails = null;
+
+    //    public function __construct(?string $uid, ?array $roles, ?string $username, ?Gender $sex, ?int $age, ?string $address, ?UserDetails $userDetails, ?UserPreference $userPreferences)
+    //    {
+    //        $this->uid = $uid;
+    //        $this->roles = $roles;
+    //        $this->username = $username;
+    //        $this->sex = $sex;
+    //        $this->age = $age;
+    //        $this->address = $address;
+    //        $this->userDetails = $userDetails;
+    //        $this->userPreferences = $userPreferences;
+    //    }
 
     public function getId(): ?int
     {
@@ -46,13 +81,6 @@ class User implements UserInterface
         return $this->uid;
     }
 
-    public function setUid(string $uid): static
-    {
-        $this->uid = $uid;
-
-        return $this;
-    }
-
     /**
      * A visual identifier that represents this user.
      *
@@ -61,6 +89,20 @@ class User implements UserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->uid;
+    }
+
+    public function setUid(?string $uid): static
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    public function setSex(?Gender $sex): static
+    {
+        $this->sex = $sex;
+
+        return $this;
     }
 
     /**
@@ -104,13 +146,6 @@ class User implements UserInterface
         return $this->sex;
     }
 
-    public function setSex(?Gender $sex): static
-    {
-        $this->sex = $sex;
-
-        return $this;
-    }
-
     public function getAge(): ?int
     {
         return $this->age;
@@ -142,12 +177,19 @@ class User implements UserInterface
 
     public function setUserDetails(UserDetails $userDetails): static
     {
-        // set the owning side of the relation if necessary
-        if ($userDetails->getUser() !== $this) {
-            $userDetails->setUser($this);
-        }
-
         $this->userDetails = $userDetails;
+
+        return $this;
+    }
+
+    public function getUserPreferences(): ?UserPreference
+    {
+        return $this->userPreferences;
+    }
+
+    public function setUserPreferences(?UserPreference $userPreferences): static
+    {
+        $this->userPreferences = $userPreferences;
 
         return $this;
     }

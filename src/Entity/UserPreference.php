@@ -2,11 +2,21 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UserPreferenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+    operations: [
+    ],
+    formats: ['json' => ['application/json']],
+    denormalizationContext: ['groups' => ['preference:write']],
+)]
 #[ORM\Entity(repositoryClass: UserPreferenceRepository::class)]
 class UserPreference
 {
@@ -15,11 +25,7 @@ class UserPreference
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne()]
     private ?Gender $sex = null;
 
     #[ORM\Column(nullable: true)]
@@ -31,7 +37,7 @@ class UserPreference
     #[ORM\Column(nullable: true)]
     private ?int $radiusDistance = null;
 
-    #[ORM\ManyToMany(targetEntity: Hobby::class, inversedBy: 'userPreferences')]
+    #[ORM\ManyToMany(targetEntity: Hobby::class, inversedBy: 'userPreferences', cascade: ['persist'])]
     private Collection $hobbies;
 
     public function __construct()
@@ -42,18 +48,6 @@ class UserPreference
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
     }
 
     public function getSex(): ?Gender
@@ -110,6 +104,16 @@ class UserPreference
     public function getHobbies(): Collection
     {
         return $this->hobbies;
+    }
+
+    /**
+     * @return UserPreference
+     */
+    public function setHobbies(Collection $hobbies): static
+    {
+        $this->hobbies = $hobbies;
+
+        return $this;
     }
 
     public function addHobby(Hobby $hobby): static
