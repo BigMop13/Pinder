@@ -11,9 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource(
     operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
     ],
     formats: ['json' => ['application/json']],
     normalizationContext: ['groups' => ['image:read']],
