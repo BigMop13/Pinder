@@ -23,11 +23,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 requestBody: new Model\RequestBody(
                     content: new \ArrayObject([
                         'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => ['type' => 'string'],
+                                    'description' => ['type' => 'string']
+                                ]
+                            ],
                             'example' => [
                                 'hobby' => 'test_hobby',
                             ],
-                        ],
-                    ])
+                            ],
+                        ])
                 )
             ),
         ),
@@ -42,7 +49,6 @@ class Hobby
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['hobby:write', 'hobby:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

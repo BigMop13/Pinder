@@ -23,6 +23,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 requestBody: new Model\RequestBody(
                     content: new \ArrayObject([
                         'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => ['type' => 'string'],
+                                    'description' => ['type' => 'string']
+                                ]
+                            ],
                             'example' => [
                                 'hobby' => 'test_hobby',
                             ],
