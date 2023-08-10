@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model;
 use App\Repository\GenderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,10 +17,24 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new Get(),
         new GetCollection(),
-        new Post()
+        new Post(
+            openapi: new Model\Operation(
+                summary: 'Create user',
+                requestBody: new Model\RequestBody(
+                    content: new \ArrayObject([
+                        'application/json' => [
+                            'example' => [
+                                'hobby' => 'test_hobby',
+                            ],
+                        ],
+                    ])
+                )
+            ),
+        ),
     ],
     formats: ['json' => ['application/json']],
-    denormalizationContext: ['groups' => ['gender:write']]
+    normalizationContext: ['groups' => ['gender:read']],
+    denormalizationContext: ['groups' => ['gender:write']],
 )]
 #[ORM\Entity(repositoryClass: GenderRepository::class)]
 class Gender
@@ -27,9 +42,11 @@ class Gender
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['gender:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['gender:read'])]
     private ?string $sex = null;
 
     #[ORM\OneToMany(mappedBy: 'sex', targetEntity: User::class)]
