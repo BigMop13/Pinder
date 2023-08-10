@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model;
 use App\Controller\Security\UserRegistration;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,6 +19,36 @@ use Symfony\Component\Security\Core\User\UserInterface;
         new Post(
             uriTemplate: '/user/register',
             controller: UserRegistration::class,
+            openapi: new Model\Operation(
+                summary: 'Create user',
+                requestBody: new Model\RequestBody(
+                    content: new \ArrayObject([
+                        'application/json' => [
+                            'example' => [
+                                'uid' => 'testUser',
+                                'roles' => ['string'],
+                                'username' => 'string',
+                                'genderId' => 1,
+                                'age' => 0,
+                                'address' => 'string',
+                                'userPreference' => [
+                                    'genderId' => 1,
+                                    'lowerAgeRange' => 0,
+                                    'upperAgeRange' => 0,
+                                    'radiusDistance' => 0,
+                                    'hobbyIds' => [2, 4, 6],
+                                ],
+                                'userDetails' => [
+                                    'description' => 'string',
+                                    'education' => 'string',
+                                    'work' => 'string',
+                                    'imageUrls' => ['b', 'a', 'a', 'a'],
+                                ],
+                            ],
+                        ],
+                    ])
+                )
+            ),
             name: 'registration'
         ),
     ],
@@ -58,18 +89,6 @@ class User implements UserInterface
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?UserDetails $userDetails = null;
-
-    //    public function __construct(?string $uid, ?array $roles, ?string $username, ?Gender $sex, ?int $age, ?string $address, ?UserDetails $userDetails, ?UserPreference $userPreferences)
-    //    {
-    //        $this->uid = $uid;
-    //        $this->roles = $roles;
-    //        $this->username = $username;
-    //        $this->sex = $sex;
-    //        $this->age = $age;
-    //        $this->address = $address;
-    //        $this->userDetails = $userDetails;
-    //        $this->userPreferences = $userPreferences;
-    //    }
 
     public function getId(): ?int
     {
