@@ -24,6 +24,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
                 requestBody: new Model\RequestBody(
                     content: new \ArrayObject([
                         'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => ['type' => 'string'],
+                                    'description' => ['type' => 'string']
+                                ]
+                            ],
                             'example' => [
                                 'uid' => 'testUser',
                                 'roles' => ['string'],
@@ -49,7 +56,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
                     ])
                 )
             ),
-            name: 'registration'
         ),
     ],
     formats: ['json' => ['application/json']],
