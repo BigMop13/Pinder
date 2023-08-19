@@ -27,8 +27,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
                                 'type' => 'object',
                                 'properties' => [
                                     'name' => ['type' => 'string'],
-                                    'description' => ['type' => 'string']
-                                ]
+                                    'description' => ['type' => 'string'],
+                                ],
                             ],
                             'example' => [
                                 'hobby' => 'test_hobby',
@@ -49,10 +49,11 @@ class Hobby
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['hobby:write', 'hobby:read'])]
+    #[Groups(['hobby:write', 'hobby:read', 'user:read'])]
     private ?string $hobby = null;
 
     #[ORM\ManyToMany(targetEntity: UserPreference::class, mappedBy: 'hobbies')]

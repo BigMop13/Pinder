@@ -3,15 +3,21 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserPreferenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
+        new Get(),
+        new GetCollection(),
     ],
     formats: ['json' => ['application/json']],
+    normalizationContext: ['groups' => ['preference:read']],
     denormalizationContext: ['groups' => ['preference:write']],
 )]
 #[ORM\Entity(repositoryClass: UserPreferenceRepository::class)]
@@ -23,18 +29,23 @@ class UserPreference
     private ?int $id = null;
 
     #[ORM\ManyToOne()]
+    #[Groups(['user:read', 'preference:read'])]
     private ?Gender $sex = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'preference:read'])]
     private ?int $lowerAgeRange = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'preference:read'])]
     private ?int $upperAgeRange = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'preference:read'])]
     private ?int $radiusDistance = null;
 
     #[ORM\ManyToMany(targetEntity: Hobby::class, inversedBy: 'userPreferences', cascade: ['persist'])]
+    #[Groups(['user:read', 'preference:read'])]
     private Collection $hobbies;
 
     public function __construct()

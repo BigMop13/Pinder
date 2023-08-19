@@ -27,11 +27,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
                                 'type' => 'object',
                                 'properties' => [
                                     'name' => ['type' => 'string'],
-                                    'description' => ['type' => 'string']
-                                ]
+                                    'description' => ['type' => 'string'],
+                                ],
                             ],
                             'example' => [
-                                'hobby' => 'test_hobby',
+                                'sex' => 'gender_example',
                             ],
                         ],
                     ])
@@ -49,11 +49,11 @@ class Gender
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['gender:read'])]
+    #[Groups(['gender:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['gender:read'])]
+    #[Groups(['gender:read', 'gender:write', 'user:read'])]
     private ?string $sex = null;
 
     #[ORM\OneToMany(mappedBy: 'sex', targetEntity: User::class)]

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Security;
+namespace App\Controller\User;
 
 use App\Dto\Registration\RegistrationInput;
 use App\Exception\NoGenderFoundException;
 use App\Service\Register\RegisterUser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -30,6 +31,6 @@ readonly class UserRegistration
 
         $this->registerUser->registerUser($registerData);
 
-        return new JsonResponse('User created successfully');
+        return new JsonResponse('User created successfully', Response::HTTP_CREATED);
     }
 }

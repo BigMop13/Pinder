@@ -14,7 +14,7 @@ final readonly class RegistrationInput
         public int $age,
         public string $address,
         public UserPreferenceInput $userPreference,
-        public UserDetailsInput $userDetails
+        public UserDetailsInput $userDetails,
     ) {
     }
 }
