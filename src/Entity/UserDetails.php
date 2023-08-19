@@ -3,16 +3,22 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserDetailsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
+        new Get(),
+        new GetCollection(),
     ],
     formats: ['json' => ['application/json']],
+    normalizationContext: ['groups' => ['details:read']],
     denormalizationContext: ['groups' => ['details:write']],
 )]
 #[ORM\Entity(repositoryClass: UserDetailsRepository::class)]
@@ -24,15 +30,19 @@ class UserDetails
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['user:read', 'details:read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'details:read'])]
     private ?string $education = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'details:read'])]
     private ?string $work = null;
 
     #[ORM\OneToMany(mappedBy: 'userDetails', targetEntity: Image::class, cascade: ['persist'])]
+    #[Groups(['user:read', 'details:read'])]
     private Collection $images;
 
     public function __construct()

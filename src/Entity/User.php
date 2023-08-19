@@ -7,10 +7,11 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
-use App\Controller\Security\UserRegistration;
+use App\Controller\User\UserRegistration;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
@@ -28,8 +29,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
                                 'type' => 'object',
                                 'properties' => [
                                     'name' => ['type' => 'string'],
-                                    'description' => ['type' => 'string']
-                                ]
+                                    'description' => ['type' => 'string'],
+                                ],
                             ],
                             'example' => [
                                 'uid' => 'testUser',
@@ -59,7 +60,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
         ),
     ],
     formats: ['json' => ['application/json']],
-    denormalizationContext: ['groups' => ['user:write']],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface
@@ -67,33 +69,41 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?string $uid = null;
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read'])]
     private ?string $username = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:read'])]
     private ?Gender $sex = null;
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $age = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read'])]
     private ?string $address = null;
 
-    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:read'])]
     private ?UserPreference $userPreferences = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:read'])]
     private ?UserDetails $userDetails = null;
 
     public function getId(): ?int
