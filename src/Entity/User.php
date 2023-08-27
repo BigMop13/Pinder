@@ -7,61 +7,60 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
+use App\Controller\User\LoginUser;
 use App\Controller\User\UserRegistration;
 use App\Repository\UserRepository;
+use ArrayObject;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(
-            uriTemplate: '/user/register',
-            controller: UserRegistration::class,
-            openapi: new Model\Operation(
-                summary: 'Create user',
-                requestBody: new Model\RequestBody(
-                    content: new \ArrayObject([
-                        'application/json' => [
-                            'schema' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'name' => ['type' => 'string'],
-                                    'description' => ['type' => 'string'],
-                                ],
-                            ],
-                            'example' => [
-                                'uid' => 'testUser',
-                                'roles' => ['string'],
-                                'username' => 'string',
-                                'genderId' => 1,
-                                'age' => 0,
-                                'address' => 'string',
-                                'userPreference' => [
-                                    'genderId' => 1,
-                                    'lowerAgeRange' => 0,
-                                    'upperAgeRange' => 0,
-                                    'radiusDistance' => 0,
-                                    'hobbyIds' => [2, 4, 6],
-                                ],
-                                'userDetails' => [
-                                    'description' => 'string',
-                                    'education' => 'string',
-                                    'work' => 'string',
-                                    'imageUrls' => ['b', 'a', 'a', 'a'],
-                                ],
-                            ],
-                        ],
-                    ])
-                )
-            ),
-        ),
-    ],
     formats: ['json' => ['application/json']],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
+)]
+#[Get]
+#[GetCollection]
+#[Post(
+    uriTemplate: '/user/register',
+    controller: UserRegistration::class,
+    openapi: new Model\Operation(
+        summary: 'Create user',
+        requestBody: new Model\RequestBody(
+            content: new ArrayObject([
+                'application/json' => [
+                    'schema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => 'string'],
+                            'description' => ['type' => 'string'],
+                        ],
+                    ],
+                    'example' => [
+                        'uid' => 'testUser',
+                        'username' => 'string',
+                        'genderId' => 1,
+                        'age' => 0,
+                        'address' => 'string',
+                        'userPreference' => [
+                            'genderId' => 1,
+                            'lowerAgeRange' => 0,
+                            'upperAgeRange' => 0,
+                            'radiusDistance' => 0,
+                            'hobbyIds' => [2, 4, 6],
+                        ],
+                        'userDetails' => [
+                            'description' => 'string',
+                            'education' => 'string',
+                            'work' => 'string',
+                            'imageUrls' => ['b', 'a', 'a', 'a'],
+                        ],
+                    ],
+                ],
+            ])
+        )
+    ),
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface
@@ -77,7 +76,7 @@ class User implements UserInterface
 
     #[ORM\Column]
     #[Groups(['user:read'])]
-    private array $roles = [];
+    private array $roles = ['ROLE_USER'];
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['user:read'])]
@@ -123,7 +122,7 @@ class User implements UserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->uid;
+        return (string)$this->uid;
     }
 
     public function setUid(?string $uid): static
@@ -152,12 +151,12 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
-
-        return $this;
-    }
+//    public function setRoles(array $roles): static
+//    {
+//        $this->roles = $roles;
+//
+//        return $this;
+//    }
 
     public function eraseCredentials()
     {
