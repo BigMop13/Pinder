@@ -44,7 +44,6 @@ readonly class RegisterUser
         $user = BaseUserFactory::create(
             $registerData->uid,
             $registerData->username,
-            $registerData->roles,
             $userGender,
             $registerData->age,
             $registerData->address

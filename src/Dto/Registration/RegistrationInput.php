@@ -10,7 +10,6 @@ final readonly class RegistrationInput
 {
     public function __construct(
         #[Assert\NotBlank()]
-        #[Assert\Unique]
         public string $uid,
         #[Assert\NotBlank()]
         #[Assert\Length(
