@@ -15,7 +15,6 @@ final readonly class UserDetailsInput
             max: 250,
         )]
         public string $description,
-
         public string $education,
         public string $work,
         /**

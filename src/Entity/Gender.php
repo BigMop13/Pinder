@@ -59,9 +59,13 @@ class Gender
     #[ORM\OneToMany(mappedBy: 'sex', targetEntity: User::class)]
     private Collection $users;
 
+    #[ORM\ManyToMany(targetEntity: UserPreference::class, mappedBy: 'genders')]
+    private Collection $userPreferences;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->userPreferences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,6 +110,33 @@ class Gender
             if ($user->getSex() === $this) {
                 $user->setSex(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserPreference>
+     */
+    public function getUserPreferences(): Collection
+    {
+        return $this->userPreferences;
+    }
+
+    public function addUserPreference(UserPreference $userPreference): static
+    {
+        if (!$this->userPreferences->contains($userPreference)) {
+            $this->userPreferences->add($userPreference);
+            $userPreference->addGender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserPreference(UserPreference $userPreference): static
+    {
+        if ($this->userPreferences->removeElement($userPreference)) {
+            $userPreference->removeGender($this);
         }
 
         return $this;

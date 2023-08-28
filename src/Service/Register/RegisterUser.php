@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Service\Register;
 
 use App\Dto\Registration\RegistrationInput;
-use App\Exception\NoGenderFoundException;
+use App\Entity\User;
 use App\Factory\ImageFactory;
 use App\Factory\Register\BaseUserFactory;
 use App\Factory\Register\UserDetailsFactory;
 use App\Factory\Register\UserPreferencesFactory;
-use App\Repository\GenderRepository;
-use App\Repository\HobbyRepository;
+use App\Repository\Interface\GenderRepositoryInterface;
+use App\Repository\Interface\HobbyRepositoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,27 +19,28 @@ use Doctrine\ORM\EntityManagerInterface;
 readonly class RegisterUser
 {
     public function __construct(
-        private GenderRepository $genderRepository,
+        private GenderRepositoryInterface $genderRepository,
         private EntityManagerInterface $entityManager,
-        private HobbyRepository $hobbyRepository
+        private HobbyRepositoryInterface $hobbyRepository
     ) {
     }
 
-    /**
-     * @throws NoGenderFoundException
-     */
-    public function registerUser(RegistrationInput $registerData): void
+    public function createUser(RegistrationInput $registerData): void
+    {
+        $user = $this->registerUser($registerData);
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    private function registerUser(RegistrationInput $registerData): User
     {
         $userDetails = $registerData->userDetails;
         $userPreferences = $registerData->userPreference;
         $userGender = $this->genderRepository->find($registerData->genderId);
-        $userPreferenceGender = $this->genderRepository->find($userPreferences->genderId);
+        $userPreferenceGenders = $this->searchForGenders($userPreferences->genderIds);
         $userPreferenceHobbies = $this->searchForHobbies($userPreferences->hobbyIds);
         $images = $this->createImages($userDetails->imageUrls);
-
-        if (!$userGender || !$userPreferenceGender) {
-            throw new NoGenderFoundException('No gender found');
-        }
 
         $user = BaseUserFactory::create(
             $registerData->uid,
@@ -57,15 +58,14 @@ readonly class RegisterUser
         ));
 
         $user->setUserPreferences(UserPreferencesFactory::create(
-            $userPreferenceGender,
             $userPreferences->lowerAgeRange,
             $userPreferences->upperAgeRange,
             $userPreferences->radiusDistance,
-            $userPreferenceHobbies
+            $userPreferenceHobbies,
+            $userPreferenceGenders
         ));
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        return $user;
     }
 
     /**
@@ -74,6 +74,13 @@ readonly class RegisterUser
     private function searchForHobbies(array $hobbyIds): Collection
     {
         $hobbies = $this->hobbyRepository->getHobbiesFromArrayOfIds($hobbyIds);
+
+        return new ArrayCollection($hobbies);
+    }
+
+    private function searchForGenders(array $genderIds): Collection
+    {
+        $hobbies = $this->genderRepository->getHobbiesFromArrayOfIds($genderIds);
 
         return new ArrayCollection($hobbies);
     }

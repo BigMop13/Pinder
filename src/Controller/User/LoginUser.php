@@ -1,12 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\User;
 
-use App\Exception\InvalidTokenException;
-use App\Repository\UserRepository;
-use App\Security\ExtractToken;
-use Kreait\Firebase\Factory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
