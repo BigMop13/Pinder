@@ -7,7 +7,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
-use App\Controller\User\LoginUser;
 use App\Controller\User\UserRegistration;
 use App\Repository\UserRepository;
 use ArrayObject;
@@ -28,7 +27,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     openapi: new Model\Operation(
         summary: 'Create user',
         requestBody: new Model\RequestBody(
-            content: new ArrayObject([
+            content: new \ArrayObject([
                 'application/json' => [
                     'schema' => [
                         'type' => 'object',
@@ -44,11 +43,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
                         'age' => 0,
                         'address' => 'string',
                         'userPreference' => [
-                            'genderId' => 1,
                             'lowerAgeRange' => 0,
                             'upperAgeRange' => 0,
                             'radiusDistance' => 0,
                             'hobbyIds' => [2, 4, 6],
+                            'genderIds' => [1, 2],
                         ],
                         'userDetails' => [
                             'description' => 'string',
@@ -122,7 +121,7 @@ class User implements UserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string)$this->uid;
+        return (string) $this->uid;
     }
 
     public function setUid(?string $uid): static
@@ -151,12 +150,12 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
-//    public function setRoles(array $roles): static
-//    {
-//        $this->roles = $roles;
-//
-//        return $this;
-//    }
+    //    public function setRoles(array $roles): static
+    //    {
+    //        $this->roles = $roles;
+    //
+    //        return $this;
+    //    }
 
     public function eraseCredentials()
     {

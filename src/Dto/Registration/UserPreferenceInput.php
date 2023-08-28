@@ -11,7 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class UserPreferenceInput
 {
     public function __construct(
-        public int $genderId,
         #[Assert\GreaterThanOrEqual(18)]
         public int $lowerAgeRange,
         #[Assert\GreaterThanOrEqual(18)]
@@ -20,11 +19,12 @@ final readonly class UserPreferenceInput
         #[Assert\Positive()]
         #[Assert\LessThanOrEqual(300)]
         public int $radiusDistance,
-        /**
-         * @var int[] $hobbyIds
-         */
+        /* @var int[] $hobbyIds */
         #[Assert\Count(min: 3)]
-        public array $hobbyIds
+        public array $hobbyIds,
+        /* @var int[] $genderIds */
+        #[Assert\Count(min: 1)]
+        public array $genderIds,
     ) {
     }
 }

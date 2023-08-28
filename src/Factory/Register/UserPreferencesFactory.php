@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Factory\Register;
 
-use App\Entity\Gender;
 use App\Entity\UserPreference;
+use Doctrine\Common\Collections\Collection;
 
 class UserPreferencesFactory
 {
-    public static function create(Gender $gender, int $lowerAgeRange, int $upperAgeRange, int $radiusDistance, mixed $hobbies): UserPreference
+    public static function create(int $lowerAgeRange, int $upperAgeRange, int $radiusDistance, Collection $hobbies, Collection $genders): UserPreference
     {
         return (new UserPreference())
-            ->setSex($gender)
             ->setLowerAgeRange($lowerAgeRange)
             ->setUpperAgeRange($upperAgeRange)
             ->setRadiusDistance($radiusDistance)
-            ->setHobbies($hobbies);
+            ->setHobbies($hobbies)
+            ->setGenders($genders);
     }
 }

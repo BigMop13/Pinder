@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Hobby;
+use App\Repository\Interface\HobbyRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Hobby[]    findAll()
  * @method Hobby[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class HobbyRepository extends ServiceEntityRepository
+class HobbyRepository extends ServiceEntityRepository implements HobbyRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

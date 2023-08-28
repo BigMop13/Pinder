@@ -28,10 +28,6 @@ class UserPreference
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne()]
-    #[Groups(['user:read', 'preference:read'])]
-    private ?Gender $sex = null;
-
     #[ORM\Column(nullable: true)]
     #[Groups(['user:read', 'preference:read'])]
     private ?int $lowerAgeRange = null;
@@ -48,26 +44,19 @@ class UserPreference
     #[Groups(['user:read', 'preference:read'])]
     private Collection $hobbies;
 
+    #[ORM\ManyToMany(targetEntity: Gender::class, inversedBy: 'userPreferences', cascade: ['persist'])]
+    #[Groups(['user:read', 'preference:read'])]
+    private Collection $genders;
+
     public function __construct()
     {
         $this->hobbies = new ArrayCollection();
+        $this->genders = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getSex(): ?Gender
-    {
-        return $this->sex;
-    }
-
-    public function setSex(?Gender $sex): static
-    {
-        $this->sex = $sex;
-
-        return $this;
     }
 
     public function getLowerAgeRange(): ?int
@@ -136,6 +125,37 @@ class UserPreference
     public function removeHobby(Hobby $hobby): static
     {
         $this->hobbies->removeElement($hobby);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Gender>
+     */
+    public function getGenders(): Collection
+    {
+        return $this->genders;
+    }
+
+    public function addGender(Gender $gender): static
+    {
+        if (!$this->genders->contains($gender)) {
+            $this->genders->add($gender);
+        }
+
+        return $this;
+    }
+
+    public function removeGender(Gender $gender): static
+    {
+        $this->genders->removeElement($gender);
+
+        return $this;
+    }
+
+    public function setGenders(Collection $genders): static
+    {
+        $this->genders = $genders;
 
         return $this;
     }
