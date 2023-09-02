@@ -49,11 +49,11 @@ class Gender
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['gender:read', 'user:read'])]
+    #[Groups(['gender:read', 'user:read', 'preference:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['gender:read', 'gender:write', 'user:read'])]
+    #[Groups(['gender:read', 'gender:write', 'user:read', 'preference:read'])]
     private ?string $sex = null;
 
     #[ORM\OneToMany(mappedBy: 'sex', targetEntity: User::class)]
