@@ -49,11 +49,11 @@ class Hobby
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'preference:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['hobby:write', 'hobby:read', 'user:read'])]
+    #[Groups(['hobby:write', 'hobby:read', 'user:read', 'preference:read'])]
     private ?string $hobby = null;
 
     #[ORM\ManyToMany(targetEntity: UserPreference::class, mappedBy: 'hobbies')]
