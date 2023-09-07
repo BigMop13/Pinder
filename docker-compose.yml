@@ -46,6 +46,11 @@ services:
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
+  redis:
+    image: redis:7.2
+    container_name: pinder_redis
+    ports:
+      - "6382:6379"
 
 ###> symfony/mercure-bundle ###
   mercure:
@@ -75,3 +80,4 @@ volumes:
   mercure_data:
   mercure_config:
 ###< symfony/mercure-bundle ###
+
