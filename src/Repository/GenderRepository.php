@@ -24,7 +24,6 @@ class GenderRepository extends ServiceEntityRepository implements GenderReposito
 
     /**
      * @param int[] $genderIds
-     *
      * @return Gender[]
      */
     public function getHobbiesFromArrayOfIds(array $genderIds): array
