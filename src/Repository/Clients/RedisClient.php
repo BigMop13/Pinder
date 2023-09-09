@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repository\Clients;
@@ -10,7 +11,7 @@ class RedisClient
     public function __construct(private readonly string $redisUrl, private Client $client)
     {
         $this->client = new Client([
-            'host' => $this->redisUrl
+            'host' => $this->redisUrl,
         ]);
     }
 
