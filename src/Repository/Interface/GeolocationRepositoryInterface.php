@@ -11,4 +11,6 @@ interface GeolocationRepositoryInterface
     public function saveNewGeolocation(GeolocationCoordinatesOutput $coordinates): void;
 
     public function getGeolocationByCity(string $cityName): ?array;
+
+    public function getAllCitiesInRadius(int $radius, string $cityName): array;
 }

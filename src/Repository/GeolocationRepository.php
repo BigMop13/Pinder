@@ -11,6 +11,7 @@ use App\Repository\Interface\GeolocationRepositoryInterface;
 class GeolocationRepository implements GeolocationRepositoryInterface
 {
     private const CITIES_REDIS_KEY = 'CITY';
+    private const DISTANCE_UNIT = 'km';
 
     public function __construct(private readonly RedisClient $client)
     {
@@ -32,5 +33,13 @@ class GeolocationRepository implements GeolocationRepositoryInterface
     public function getGeolocationByCity(string $cityName): ?array
     {
         return $this->client->getRedisClient()->geopos(self::CITIES_REDIS_KEY, [$cityName])[0];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllCitiesInRadius(int $radius, string $cityName): array
+    {
+        return $this->client->getRedisClient()->georadiusbymember(self::CITIES_REDIS_KEY, $cityName, $radius, self::DISTANCE_UNIT);
     }
 }
