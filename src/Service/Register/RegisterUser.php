@@ -11,7 +11,9 @@ use App\Factory\Register\BaseUserFactory;
 use App\Factory\Register\UserDetailsFactory;
 use App\Factory\Register\UserPreferencesFactory;
 use App\Repository\Interface\GenderRepositoryInterface;
+use App\Repository\Interface\GeolocationRepositoryInterface;
 use App\Repository\Interface\HobbyRepositoryInterface;
+use App\Service\Geolocation\GetCityGeolocation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +23,9 @@ readonly class RegisterUser
     public function __construct(
         private GenderRepositoryInterface $genderRepository,
         private EntityManagerInterface $entityManager,
-        private HobbyRepositoryInterface $hobbyRepository
+        private HobbyRepositoryInterface $hobbyRepository,
+        private GeolocationRepositoryInterface $geolocationRepository,
+        private GetCityGeolocation $getCityGeolocation,
     ) {
     }
 
@@ -37,17 +41,19 @@ readonly class RegisterUser
     {
         $userDetails = $registerData->userDetails;
         $userPreferences = $registerData->userPreference;
+        $userAddress = $registerData->address;
         $userGender = $this->genderRepository->find($registerData->genderId);
         $userPreferenceGenders = $this->searchForGenders($userPreferences->genderIds);
         $userPreferenceHobbies = $this->searchForHobbies($userPreferences->hobbyIds);
         $images = $this->createImages($userDetails->imageUrls);
+        $this->saveGeolocationIfNotExist($userAddress);
 
         $user = BaseUserFactory::create(
             $registerData->uid,
             $registerData->username,
             $userGender,
             $registerData->age,
-            $registerData->address
+            $userAddress
         );
 
         $user->setUserDetails(UserDetailsFactory::create(
@@ -96,5 +102,14 @@ readonly class RegisterUser
         }
 
         return $images;
+    }
+
+    private function saveGeolocationIfNotExist(string $userAddress): void
+    {
+        if ($this->geolocationRepository->getGeolocationByCity($userAddress)) {
+            return;
+        }
+
+        $this->geolocationRepository->saveNewGeolocation($this->getCityGeolocation->getGeolocationFromCityName($userAddress));
     }
 }

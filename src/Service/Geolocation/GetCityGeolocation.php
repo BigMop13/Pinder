@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Geolocation;
@@ -12,7 +13,6 @@ readonly class GetCityGeolocation
 {
     public function __construct(private string $geolocationApiUrl, private SerializerInterface $serializer)
     {
-
     }
 
     public function getGeolocationFromCityName(string $cityName): GeolocationCoordinatesOutput
@@ -23,8 +23,10 @@ readonly class GetCityGeolocation
             $this->geolocationApiUrl.$cityName
         );
 
-        $firstResponse = json_encode(json_decode($response->getBody()->getContents(), true)[0]);
+        $cityResponse = json_decode($response->getBody()->getContents(), true)[0];
+        $cityResponse['cityName'] = $cityName;
+        $finalResponse = json_encode($cityResponse);
 
-        return $this->serializer->deserialize($firstResponse, GeolocationCoordinatesOutput::class, 'json');
+        return $this->serializer->deserialize($finalResponse, GeolocationCoordinatesOutput::class, 'json');
     }
 }

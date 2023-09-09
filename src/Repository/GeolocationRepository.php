@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repository;
@@ -15,18 +16,21 @@ class GeolocationRepository implements GeolocationRepositoryInterface
     {
     }
 
-    public function saveNewGeolocation(string $cityName, GeolocationCoordinatesOutput $coordinates): void
+    public function saveNewGeolocation(GeolocationCoordinatesOutput $coordinates): void
     {
         $this->client->getRedisClient()->geoadd(
             self::CITIES_REDIS_KEY,
             $coordinates->lat,
             $coordinates->lon,
-            $cityName
+            $coordinates->cityName
         );
     }
 
-    public function getGeolocationByCity(string $cityName): array
+    /**
+     * @return string[]|null
+     */
+    public function getGeolocationByCity(string $cityName): ?array
     {
-        // TODO: Implement getGeolocationByCity() method.
+        return $this->client->getRedisClient()->geopos(self::CITIES_REDIS_KEY, [$cityName])[0];
     }
 }

@@ -24,6 +24,7 @@ class HobbyRepository extends ServiceEntityRepository implements HobbyRepository
 
     /**
      * @param int[] $hobbyIds
+     *
      * @return Hobby[]
      */
     public function getHobbiesFromArrayOfIds(array $hobbyIds): array
