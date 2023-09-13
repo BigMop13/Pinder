@@ -2,11 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Gender;
 use App\Entity\Hobby;
 use App\Entity\User;
+use App\Entity\UserPreference;
 use App\Repository\Interface\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
@@ -30,16 +31,28 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     /**
      * @return User[]
      */
-    public function getUserMatches(User $currentUser): array
+    public function getUserMatches(UserPreference $currentUserPreference): array
     {
-        return [];
-    }
+        // dodać dobieranie poprzez hobby oraz poprzez odległość od zamieszkania (redis)
+        // aktualne dobieranie polega na przedziale wiekowym i preferowanych płciach
+        $qb = $this->createQueryBuilder('u');
 
-    /**
-     * @param Hobby[] $preferredHobbies
-     */
-    private function compareHobbies(array $preferredHobbies, QueryBuilder $queryBuilder): void
-    {
-        return;
+        $qb->select('u.id as id, g.id as genderId, u.age')
+            ->innerJoin('u.sex', 'g')
+            ->where(
+                $qb->expr()->andX(
+                    $qb->expr()->between('u.age', ':minAge', ':maxAge'),
+                    $qb->expr()->in('g', ':genders'),
+                )
+            )
+            ->setParameters([
+                'minAge' => $currentUserPreference->getLowerAgeRange(),
+                'maxAge' => $currentUserPreference->getUpperAgeRange(),
+                'genders' => $currentUserPreference->getGenders()->map(function (Gender $gender) {
+                    return $gender->getId();
+                })->toArray(),
+            ]);
+
+        return $qb->getQuery()->getResult();
     }
 }

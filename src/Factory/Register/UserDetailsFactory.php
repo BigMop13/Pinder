@@ -8,12 +8,13 @@ use App\Entity\UserDetails;
 
 class UserDetailsFactory
 {
-    public static function create(string $description, string $education, string $work, mixed $images): UserDetails
+    public static function create(string $description, string $education, string $work, mixed $images, mixed $hobbies): UserDetails
     {
         return (new UserDetails())
             ->setDescription($description)
             ->setEducation($education)
             ->setWork($work)
-            ->setImages($images);
+            ->setImages($images)
+            ->setHobbies($hobbies);
     }
 }

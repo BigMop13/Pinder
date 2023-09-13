@@ -45,6 +45,7 @@ readonly class RegisterUser
         $userGender = $this->genderRepository->find($registerData->genderId);
         $userPreferenceGenders = $this->searchForGenders($userPreferences->genderIds);
         $userPreferenceHobbies = $this->searchForHobbies($userPreferences->hobbyIds);
+        $userDetailsHobbies = $this->searchForHobbies($userDetails->hobbyIds);
         $images = $this->createImages($userDetails->imageUrls);
         $this->saveGeolocationIfNotExist($userAddress);
 
@@ -60,7 +61,8 @@ readonly class RegisterUser
             $userDetails->description,
             $userDetails->education,
             $userDetails->work,
-            $images
+            $images,
+            $userDetailsHobbies,
         ));
 
         $user->setUserPreferences(UserPreferencesFactory::create(
@@ -68,7 +70,7 @@ readonly class RegisterUser
             $userPreferences->upperAgeRange,
             $userPreferences->radiusDistance,
             $userPreferenceHobbies,
-            $userPreferenceGenders
+            $userPreferenceGenders,
         ));
 
         return $user;
