@@ -21,7 +21,9 @@ final readonly class UserDetailsInput
          * @var string[] $imageUrls
          */
         #[Assert\Count(min: 1)]
-        public array $imageUrls
+        public array $imageUrls,
+        #[Assert\Count(min: 3)]
+        public array $hobbyIds
     ) {
     }
 }
