@@ -53,7 +53,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
                             'education' => 'string',
                             'work' => 'string',
                             'imageUrls' => ['b', 'a', 'a', 'a'],
-                            'hobbyIds' => [2, 4, 6],
                         ],
                     ],
                 ],

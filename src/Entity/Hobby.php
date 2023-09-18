@@ -59,13 +59,9 @@ class Hobby
     #[ORM\ManyToMany(targetEntity: UserPreference::class, mappedBy: 'hobbies')]
     private Collection $userPreferences;
 
-    #[ORM\ManyToMany(targetEntity: UserDetails::class, mappedBy: 'hobbies')]
-    private Collection $userDetails;
-
     public function __construct()
     {
         $this->userPreferences = new ArrayCollection();
-        $this->userDetails = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -107,33 +103,6 @@ class Hobby
     {
         if ($this->userPreferences->removeElement($userPreference)) {
             $userPreference->removeHobby($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, UserDetails>
-     */
-    public function getUserDetails(): Collection
-    {
-        return $this->userDetails;
-    }
-
-    public function addUserDetail(UserDetails $userDetail): static
-    {
-        if (!$this->userDetails->contains($userDetail)) {
-            $this->userDetails->add($userDetail);
-            $userDetail->addHobby($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserDetail(UserDetails $userDetail): static
-    {
-        if ($this->userDetails->removeElement($userDetail)) {
-            $userDetail->removeHobby($this);
         }
 
         return $this;
