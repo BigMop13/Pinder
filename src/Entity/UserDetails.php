@@ -45,13 +45,9 @@ class UserDetails
     #[Groups(['user:read', 'details:read'])]
     private Collection $images;
 
-    #[ORM\ManyToMany(targetEntity: Hobby::class, inversedBy: 'userDetails')]
-    private Collection $hobbies;
-
     public function __construct()
     {
         $this->images = new ArrayCollection();
-        $this->hobbies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,13 +119,6 @@ class UserDetails
         return $this;
     }
 
-    public function setHobbies(Collection $hobbies): static
-    {
-        $this->hobbies = $hobbies;
-
-        return $this;
-    }
-
     public function removeImage(Image $image): static
     {
         if ($this->images->removeElement($image)) {
@@ -138,30 +127,6 @@ class UserDetails
                 $image->setUserDetails(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Hobby>
-     */
-    public function getHobbies(): Collection
-    {
-        return $this->hobbies;
-    }
-
-    public function addHobby(Hobby $hobby): static
-    {
-        if (!$this->hobbies->contains($hobby)) {
-            $this->hobbies->add($hobby);
-        }
-
-        return $this;
-    }
-
-    public function removeHobby(Hobby $hobby): static
-    {
-        $this->hobbies->removeElement($hobby);
 
         return $this;
     }
