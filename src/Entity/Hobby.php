@@ -49,7 +49,7 @@ class Hobby
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read', 'preference:read'])]
+    #[Groups(['user:read', 'preference:read', 'hobby:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

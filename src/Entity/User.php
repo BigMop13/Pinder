@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
+use App\Controller\User\GetUserMatch;
 use App\Controller\User\UserRegistration;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -41,7 +42,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                         'genderId' => 1,
                         'age' => 0,
                         'address' => 'string',
-                        'userPreference' => [
+                        'userPreferences' => [
                             'lowerAgeRange' => 0,
                             'upperAgeRange' => 0,
                             'radiusDistance' => 0,
@@ -59,6 +60,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ])
         )
     ),
+)]
+#[GetCollection(
+    uriTemplate: '/user/get_matches',
+    formats: ['json' => ['application/json']],
+    controller: GetUserMatch::class,
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface

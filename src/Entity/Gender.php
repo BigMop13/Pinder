@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ApiResource(
     operations: [
@@ -54,6 +55,7 @@ class Gender
 
     #[ORM\Column(length: 255)]
     #[Groups(['gender:read', 'gender:write', 'user:read', 'preference:read'])]
+    #[SerializedName('gender')]
     private ?string $sex = null;
 
     #[ORM\OneToMany(mappedBy: 'sex', targetEntity: User::class)]

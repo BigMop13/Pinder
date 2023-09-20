@@ -3,11 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Gender;
-use App\Entity\Hobby;
 use App\Entity\User;
 use App\Entity\UserPreference;
 use App\Repository\Interface\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
@@ -29,30 +29,38 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     }
 
     /**
-     * @return User[]
+     * @throws Exception
      */
-    public function getUserMatches(UserPreference $currentUserPreference): array
+    public function getUserMatches(UserPreference $currentUserPreference): User
     {
         // dodać dobieranie poprzez hobby oraz poprzez odległość od zamieszkania (redis)
         // aktualne dobieranie polega na przedziale wiekowym i preferowanych płciach
-        $qb = $this->createQueryBuilder('u');
+        $entityManager = $this->getEntityManager();
+        $connection = $entityManager->getConnection();
 
-        $qb->select('u.id as id, g.id as genderId, u.age')
-            ->innerJoin('u.sex', 'g')
-            ->where(
-                $qb->expr()->andX(
-                    $qb->expr()->between('u.age', ':minAge', ':maxAge'),
-                    $qb->expr()->in('g', ':genders'),
-                )
-            )
-            ->setParameters([
-                'minAge' => $currentUserPreference->getLowerAgeRange(),
-                'maxAge' => $currentUserPreference->getUpperAgeRange(),
-                'genders' => $currentUserPreference->getGenders()->map(function (Gender $gender) {
-                    return $gender->getId();
-                })->toArray(),
-            ]);
+        $sql = '
+            SELECT u.id, u.age
+            FROM user u
+            INNER JOIN gender g ON u.sex_id = g.id
+            WHERE u.age BETWEEN :minAge AND :maxAge
+              AND g.id IN (:genders)
+              AND u.id >= FLOOR(RAND() * (SELECT MAX(id) FROM user))
+            ORDER BY u.id
+            LIMIT 1
+        ';
 
-        return $qb->getQuery()->getResult();
+        $genderIds = $currentUserPreference->getGenders()->map(function (Gender $gender) {
+            return $gender->getId();
+        })->toArray();
+
+        $statement = $connection->prepare($sql);
+
+        $result = $statement->executeQuery([
+            'minAge' => $currentUserPreference->getLowerAgeRange(),
+            'maxAge' => $currentUserPreference->getUpperAgeRange(),
+            'genders' => implode(',', $genderIds),
+        ])->fetchAllAssociative()[0];
+
+        return $this->find($result['id']);
     }
 }
