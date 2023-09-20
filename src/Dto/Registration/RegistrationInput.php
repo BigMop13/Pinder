@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dto\Registration;
 
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class RegistrationInput
@@ -28,6 +29,7 @@ final readonly class RegistrationInput
         )]
         public string $address,
         #[Assert\Valid]
+        #[SerializedName('userPreferences')]
         public UserPreferenceInput $userPreference,
         #[Assert\Valid]
         public UserDetailsInput $userDetails,
