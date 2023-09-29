@@ -30,8 +30,9 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
 
     /**
      * @throws Exception
+     * @param int[] $alreadySeenIds
      */
-    public function getUserMatches(UserPreference $currentUserPreference): User
+    public function getUserMatch(UserPreference $currentUserPreference, array $alreadySeenIds): User
     {
         // dodać dobieranie poprzez hobby oraz poprzez odległość od zamieszkania (redis)
         // aktualne dobieranie polega na przedziale wiekowym i preferowanych płciach
@@ -45,6 +46,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
             WHERE u.age BETWEEN :minAge AND :maxAge
               AND g.id IN (:genders)
               AND u.id >= FLOOR(RAND() * (SELECT MAX(id) FROM user))
+              AND u.id NOT IN (:excludedIds)
             ORDER BY u.id
             LIMIT 1
         ';
@@ -59,8 +61,19 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
             'minAge' => $currentUserPreference->getLowerAgeRange(),
             'maxAge' => $currentUserPreference->getUpperAgeRange(),
             'genders' => implode(',', $genderIds),
+            'excludedIds' => implode(',', $alreadySeenIds),
         ])->fetchAllAssociative()[0];
 
         return $this->find($result['id']);
+    }
+
+    public function getRandomUser(): User
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->orderBy('rand')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
     }
 }

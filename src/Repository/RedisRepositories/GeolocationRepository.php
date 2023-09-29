@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Repository;
+namespace App\Repository\RedisRepositories;
 
 use App\Dto\Registration\GeolocationCoordinatesOutput;
 use App\Repository\Clients\RedisClient;
@@ -32,7 +32,7 @@ class GeolocationRepository implements GeolocationRepositoryInterface
      */
     public function getGeolocationByCity(string $cityName): ?array
     {
-        return $this->client->getRedisClient()->geopos(self::CITIES_REDIS_KEY, [$cityName])[0];
+        return $this->client->getRedisClient()->geopos(self::CITIES_REDIS_KEY, (array) $cityName)[0];
     }
 
     /**
