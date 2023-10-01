@@ -93,7 +93,7 @@ class User implements UserInterface
 
     #[ORM\Column]
     #[Groups(['user:read'])]
-    private ?int $age = null;
+    private ?\DateTime $age = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['user:read'])]
@@ -184,12 +184,12 @@ class User implements UserInterface
         return $this->sex;
     }
 
-    public function getAge(): ?int
+    public function getAge(): ?\DateTime
     {
         return $this->age;
     }
 
-    public function setAge(int $age): static
+    public function setAge(\DateTime $age): static
     {
         $this->age = $age;
 

@@ -21,9 +21,7 @@ final readonly class RegistrationInput
         public ?array $roles,
         #[SerializedName('gender')]
         public int $genderId,
-        #[Assert\GreaterThanOrEqual(18)]
-        #[Assert\LessThanOrEqual(99)]
-        public int $age,
+        public \DateTime $age,
         #[Assert\NotBlank()]
         #[Assert\Length(
             min: 3,
