@@ -9,5 +9,7 @@ use App\Entity\UserPreference;
 
 interface UserRepositoryInterface
 {
-    public function getUserMatch(UserPreference $currentUserPreference): User;
+    public function getUserMatch(UserPreference $currentUserPreference, ?array $alreadySeenIds): ?User;
+
+    public function getRandomUser(int $currentUserId): User;
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repository\RedisRepositories;
@@ -14,7 +15,7 @@ readonly class UserMatchRepository implements UserMatchesRepositoryInterface
 
     public function getUserSeenMatches(int $userId): ?array
     {
-        return (array) $this->client->getRedisClient()->get((string) $userId);
+        return $this->client->getRedisClient()->smembers((string) $userId);
     }
 
     public function saveUserMatch(int $userId, int $matchId): void

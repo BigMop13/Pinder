@@ -22,11 +22,20 @@ final class GetUserMatch extends AbstractController
     public function __invoke(): JsonResponse
     {
         $user = $this->getUser();
+        $userId = $user->getId();
+        $alreadySeenIds = $this->matchesRepository->getUserSeenMatches($userId);
+        $alreadySeenIds[] += $userId;
 
-        $userMatch = $this->userRepository->getUserMatch($user->getUserPreferences()); // todo dodać cache na userPreference od usera
-        //dodaj query które wybiera z wykluczeniem id które są już w bazie redisa
-        $this->matchesRepository->saveUserMatch($user->getId(), $userMatch->getId());
+        $userMatch = $this->userRepository->getUserMatch(
+            $user->getUserPreferences(),
+            $alreadySeenIds,
+        );
 
-        return $this->json();
+        if (!$userMatch) {
+            return $this->json($this->userRepository->getRandomUser($userId));
+        }
+        $this->matchesRepository->saveUserMatch($userId, $userMatch->getId());
+
+        return $this->json($userMatch);
     }
 }

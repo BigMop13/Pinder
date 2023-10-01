@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dto\Registration;
 
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class UserDetailsInput
@@ -21,6 +22,7 @@ final readonly class UserDetailsInput
          * @var string[] $imageUrls
          */
         #[Assert\Count(min: 1)]
+        #[SerializedName('images')]
         public array $imageUrls,
     ) {
     }

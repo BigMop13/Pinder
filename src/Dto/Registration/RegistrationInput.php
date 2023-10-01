@@ -19,6 +19,7 @@ final readonly class RegistrationInput
         )]
         public string $username,
         public ?array $roles,
+        #[SerializedName('gender')]
         public int $genderId,
         #[Assert\GreaterThanOrEqual(18)]
         #[Assert\LessThanOrEqual(99)]
