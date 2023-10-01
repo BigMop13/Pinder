@@ -40,7 +40,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                         'uid' => 'testUser',
                         'username' => 'string',
                         'gender' => 1,
-                        'age' => 0,
+                        'age' => '1990-01-15',
                         'address' => 'string',
                         'userPreferences' => [
                             'lowerAgeRange' => 0,
