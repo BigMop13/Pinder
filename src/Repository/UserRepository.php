@@ -8,6 +8,7 @@ use App\Entity\UserPreference;
 use App\Repository\Interface\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
@@ -29,38 +30,50 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     }
 
     /**
+     * @param int[] $alreadySeenIds
+     *
      * @throws Exception
+     * @throws NonUniqueResultException
      */
-    public function getUserMatches(UserPreference $currentUserPreference): User
+    public function getUserMatch(UserPreference $currentUserPreference, ?array $alreadySeenIds): ?User
     {
         // dodać dobieranie poprzez hobby oraz poprzez odległość od zamieszkania (redis)
         // aktualne dobieranie polega na przedziale wiekowym i preferowanych płciach
-        $entityManager = $this->getEntityManager();
-        $connection = $entityManager->getConnection();
-
-        $sql = '
-            SELECT u.id, u.age
-            FROM user u
-            INNER JOIN gender g ON u.sex_id = g.id
-            WHERE u.age BETWEEN :minAge AND :maxAge
-              AND g.id IN (:genders)
-              AND u.id >= FLOOR(RAND() * (SELECT MAX(id) FROM user))
-            ORDER BY u.id
-            LIMIT 1
-        ';
-
         $genderIds = $currentUserPreference->getGenders()->map(function (Gender $gender) {
             return $gender->getId();
         })->toArray();
 
-        $statement = $connection->prepare($sql);
+        $queryBuilder = $this->createQueryBuilder('u');
 
-        $result = $statement->executeQuery([
-            'minAge' => $currentUserPreference->getLowerAgeRange(),
-            'maxAge' => $currentUserPreference->getUpperAgeRange(),
-            'genders' => implode(',', $genderIds),
-        ])->fetchAllAssociative()[0];
+        return $queryBuilder
+            ->innerJoin('u.sex', 'g')
+            ->where('u.age BETWEEN :minAge AND :maxAge')
+            ->andWhere($queryBuilder->expr()->in('g.id', ':genders'))
+            ->andWhere($queryBuilder->expr()->notIn('u.id', ':excludedIds'))
+            ->orderBy('RAND()')
+            ->setMaxResults(1)
+            ->setParameters([
+                    'genders' => $currentUserPreference->getGenders()->map(function (Gender $gender) {
+                        return $gender->getId();
+                    })->toArray(),
+                    'minAge' => $currentUserPreference->getLowerAgeRange(),
+                    'maxAge' => $currentUserPreference->getUpperAgeRange(),
+                    'excludedIds' => $alreadySeenIds,
+                ]
+            )
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
-        return $this->find($result['id']);
+    public function getRandomUser(int $currentUserId): User
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->where('u.id <> :userId')
+            ->orderBy('rand')
+            ->setMaxResults(1)
+            ->setParameter('userId', $currentUserId)
+            ->getQuery()
+            ->getResult()[0];
     }
 }
