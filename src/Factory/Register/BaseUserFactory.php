@@ -9,7 +9,7 @@ use App\Entity\User;
 
 class BaseUserFactory
 {
-    public static function create(string $uid, string $username, Gender $gender, int $age, string $address): User
+    public static function create(string $uid, string $username, Gender $gender, \DateTime $age, string $address): User
     {
         return (new User())
             ->setUid($uid)
