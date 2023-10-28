@@ -12,6 +12,5 @@ return [
     Kreait\Firebase\Symfony\Bundle\FirebaseBundle::class => ['all' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
     Sentry\SentryBundle\SentryBundle::class => ['prod' => true],
-    Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
     Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
 ];
