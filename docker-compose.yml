@@ -42,3 +42,9 @@ services:
     container_name: pinder_redis
     ports:
       - "6382:6379"
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
