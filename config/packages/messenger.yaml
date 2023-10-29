@@ -12,6 +12,7 @@ framework:
         routing:
             # Route your messages to the transports
              'App\Message\SampleMessage': async
+             'App\Message\UserSelectionMessage': async
 
 # when@test:
 #    framework:

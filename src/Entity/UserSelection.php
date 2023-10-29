@@ -14,13 +14,13 @@ class UserSelection
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $ChoosingUserId = null;
+    private ?int $choosingUserId = null;
 
     #[ORM\Column]
-    private ?int $RatedUserId = null;
+    private ?int $ratedUserId = null;
 
     #[ORM\Column]
-    private ?bool $Rate = null;
+    private ?bool $rate = null;
 
     public function getId(): ?int
     {
@@ -29,36 +29,36 @@ class UserSelection
 
     public function getChoosingUserId(): ?int
     {
-        return $this->ChoosingUserId;
+        return $this->choosingUserId;
     }
 
-    public function setChoosingUserId(int $ChoosingUserId): static
+    public function setChoosingUserId(int $choosingUserId): static
     {
-        $this->ChoosingUserId = $ChoosingUserId;
+        $this->choosingUserId = $choosingUserId;
 
         return $this;
     }
 
     public function getRatedUserId(): ?int
     {
-        return $this->RatedUserId;
+        return $this->ratedUserId;
     }
 
-    public function setRatedUserId(int $RatedUserId): static
+    public function setRatedUserId(int $ratedUserId): static
     {
-        $this->RatedUserId = $RatedUserId;
+        $this->ratedUserId = $ratedUserId;
 
         return $this;
     }
 
     public function isRate(): ?bool
     {
-        return $this->Rate;
+        return $this->rate;
     }
 
-    public function setRate(bool $Rate): static
+    public function setRate(bool $rate): static
     {
-        $this->Rate = $Rate;
+        $this->rate = $rate;
 
         return $this;
     }
